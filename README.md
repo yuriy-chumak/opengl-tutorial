@@ -1,37 +1,15 @@
-## Welcome to GitHub Pages
+## Об уроках
 
-You can use the [editor on GitHub](https://github.com/yuriy-chumak/opengl-tutorial/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+Здравствуйте, инженеры.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Вы придумали нечто новое/интересное и хотели бы предварительно как-нибудь визуализировать свою идею, взглянуть на нее "со стороны", покруть так и эдак, да и просто визуально оценить привлекательность/осуществимость своего возможного будущего детища? Или вы поспорили с коллегой по поводу его очередной идеи и хотите показать очевидную бредовость оной? А может вам просто скучно и вы хотите провести простую симуляцию давно забытой темы, на которую хоть и положили болт, но она внезапно напомнила о себе и вызвала приятные воспоминания? Отлично, вы же инженер, за чем дело стало - вперед!
 
-### Markdown
+Ах, вам, наверное, для этого чего-то не хватает? Например, вы не хотите штудировать 700-страничный труд по пользованию автокадом? Или может вам лень перечитать 500 страниц руководства по блендеру? Или вы никак не можете вспомнить тот седьмой том учебника по матлабу, где описана симуляция и визуализация простых объектов на примере турбовинтового двигателя, в то время как вам всего-то надо столкнуть и посмотреть как падают вниз три костяшки домино?
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Если я угадал, то вы зашли по правильному адресу. Здесь вашему внимаю предлагается набор уроков для инженеров по широко известной в очень широких кругах библиотеке OpenGL и по чуть менее известной в менее широких кругах библиотеке newton-dynamics.
 
-```markdown
-Syntax highlighted code block
+Подчеркиваю - для инженеров, а не для программистов! Пускай программисты, для которых аналогичных уроков в сети очень много, занимаются динамическим освещением, мягкими тенями, SSAO и инстансингом - это не наши задачи. Наши задачи, это быстро отрисовать график возникшей в голове функции в объеме, динамически меняя ее параметры; или сбросить с шарика конус, рассматривая с разных углов как он красиво перекатывается по заданной сплайн-поверхности; ну или запустить в космосе пару сотен сфер с совершенно бредовым законом гравитации и посмотреть что из этого получится.
 
-# Header 1
-## Header 2
-### Header 3
+Конечно, немного попрограммировать вам придется. Но без этого все равно никак не обойтись - раз уж сел за компьютер, то нужно же как-то этому компьютеру объяснить, что ты от него хочешь. Но, обещаю, программирования будет минимум - такой минимум, что даже после полного прохождения всех уроков вы все равно не сможете гордо заявить "я теперь программист".
 
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/yuriy-chumak/opengl-tutorial/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+...
