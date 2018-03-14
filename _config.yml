@@ -1,1 +1,12 @@
-theme: jekyll-theme-minimal
+# Site settings
+title: OpenGL Tutorials for Engineers
+email: yuriy.chumak@mail.com
+description: OpenGL Tutorials for Engineers
+baseurl: "/opengl-tutorial"
+
+plugins:
+  - jekyll-sitemap
+  - jemoji
+
+# Build settings
+markdown: kramdown
