@@ -37,10 +37,14 @@ function switchTerminal(e)
 
 function doit(text)
 {
+   showTerminal();
+
    terminal.exec(text);
    terminal.focus();
 
-   hideTerminal();
+   stdInput += unescape(encodeURIComponent("(print)"));
+//
+// hideTerminal();
 }
 
 // TERMINAL:
@@ -127,6 +131,14 @@ var Module = {
          terminal.clear();
       }
 
+      //console.log("text: [", text, "]");
+
+      if (text=="> ") {
+         terminal.ready = true;
+         $("#terminal").hide();
+         terminal.pause();
+      }
+
       // let's process OL's prompt:
       terminal.set_prompt('> ');
       terminal.position(1);
@@ -135,11 +147,6 @@ var Module = {
       terminal.echo(text);
 
       // this: hide terminal when first empty line received
-      if (text=="done") {
-         terminal.ready = true;
-         $("#terminal").hide();
-         terminal.pause();
-      }
    },
    printErr: function(text) {
       console.log("error: ", text);
@@ -154,6 +161,12 @@ var Module = {
       // application robust, you may want to override this behavior before shipping!
       // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
       canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+      // resize to terminal sizes
+      $("#canvas").css({
+         'height': $("#terminal").outerHeight(),
+         'width':  $("#terminal").outerWidth()
+      });
       return canvas;
    })(),
 
