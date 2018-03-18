@@ -6,6 +6,7 @@
 
       glBegin glEnd
       glVertex glVertex2f glVertex3f
+      glColor glColor3f
 
       opengl:init)
 
@@ -15,6 +16,7 @@
       (OpenGL ES version-2-0)
       (owl interop) (owl ff) (owl io)
       (otus ffi)
+      (r5rs srfi-1)
       (owl string) (owl math))
 
    (begin
@@ -60,33 +62,49 @@
       ((glBegin mode)
          (let*((dictionary (put dictionary 'mode mode))
                (dictionary (put dictionary 'data '()))
-               (dictionary (put dictionary 'vbo ((lambda ()
-                              (define vpo '(0))
-                              (glGenBuffers 1 vpo)
-                              (car vpo))))))
+               (dictionary (put dictionary 'vbos ((lambda ()
+                              (define vbo '(0))
+                              (glGenBuffers 1 vbo)
+                              (define cbo '(0))
+                              (glGenBuffers 1 cbo)
+                              (list (car vbo) (car cbo)))))))
             (this dictionary)))
       ((glColor r g b)
-         (let ((dictionary (put dictionary 'color (list r g b))))
+         (let ((dictionary (put dictionary 'color (list r g b 1))))
             (this dictionary)))
       ((glVertex x y z)
-         (let ((dictionary (put dictionary 'data (append
-                              (get dictionary 'data '())
-                              (list x y z)
-;                              (get dictionary 'color '(1 1 1))
-                              ))))
+         (let*((dictionary (put dictionary 'vertices (append
+                              (get dictionary 'vertices '())
+                              (list x y z))))
+               (dictionary (put dictionary 'colors (append
+                              (get dictionary 'colors '())
+                              (get dictionary 'color '(1 1 1 1))))))
             (this dictionary)))
       ((glEnd)
-         (let ((data (get dictionary 'data '()))
-               (vbo (get dictionary 'vbo 0))
-               (vPosition (glGetAttribLocation (get dictionary 'program 0) "vPosition")))
-            (glBindBuffer GL_ARRAY_BUFFER vbo)
-            (glBufferData GL_ARRAY_BUFFER (* 4 (length data)) data GL_STATIC_DRAW) ; 4 = sizeof(float)
+         (let ((vbos (get dictionary 'vbos '(0 0)))
+               (vertices (get dictionary 'vertices '()))
+               (colors (get dictionary 'colors '()))
+               (vPosition (glGetAttribLocation (get dictionary 'program 0) "vPosition"))
+               (vColor    (glGetAttribLocation (get dictionary 'program 0) "vColor")))
+            (glBindBuffer GL_ARRAY_BUFFER (first vbos))
+            (glBufferData GL_ARRAY_BUFFER (* 4 (length vertices)) vertices GL_STATIC_DRAW) ; 4 = sizeof(float)
+            (glBindBuffer GL_ARRAY_BUFFER (second vbos))
+            (glBufferData GL_ARRAY_BUFFER (* 4 (length colors)) colors GL_STATIC_DRAW) ; 4 = sizeof(float)
 
             (glUseProgram (get dictionary 'program 0))
-            (glBindBuffer GL_ARRAY_BUFFER vbo)
+            ; vertices
+            (glBindBuffer GL_ARRAY_BUFFER (first vbos))
             (glVertexAttribPointer vPosition 3 GL_FLOAT GL_FALSE 0 #false)
             (glEnableVertexAttribArray vPosition)
+            ; colors
+            (glBindBuffer GL_ARRAY_BUFFER (second vbos))
+            (glVertexAttribPointer vColor 4 GL_FLOAT GL_FALSE 0 #false)
+            (glEnableVertexAttribArray vColor)
+
             (glDrawArrays GL_TRIANGLES 0 3)
+
+            ; free resources
+            ;(glDeleteBuffers (length vbos) vbos)
          (this dictionary)))
 
       (else
@@ -131,15 +149,21 @@
                ; default opengl shaders
                (define vertex-shader "
                   attribute vec4 vPosition;
+                  attribute vec4 vColor;
+
+                  varying vec4 va_Color;
                   void main()
                   {
                      gl_Position = vPosition;
+                     va_Color = vColor;
                   }")
                (define fragment-shader "
                   precision mediump float;
+
+                  varying vec4 va_Color;
                   void main()
                   {
-                     gl_FragColor = vec4( 0.0, 0.3, 0.0, 1.0 );
+                     gl_FragColor = va_Color;
                   }")
 
                (define (CreateGLProgram vstext fstext)
@@ -216,6 +240,12 @@
          (glVertex2f x y))
       ((x y z)
          (glVertex3f x y z))))
+   ; colors
+   (define (glColor3f r g b)
+      (mail 'opengl (tuple 'glColor r g b)))
+   (define glColor (case-lambda
+      ((r g b)
+         (glColor3f r g b))))
 
 
 ))

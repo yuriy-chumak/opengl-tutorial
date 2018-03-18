@@ -12,27 +12,27 @@ categories: ru
 
 Чтобы нарисовать треугольник, нам надо проделать те же действия, что и с рисованием треугольников на бумаге. А именно:
 
-1. Решить, что мы будем рисовать именно треугольник (на будущее - мы, в принципе, можем решить и "я не знаю, что это будет - треугольник или полигон"; но сейчас - треугольник).
+* Решить, что мы будем рисовать именно треугольник (на будущее - мы, в принципе, можем решить и "я не знаю, что это будет - треугольник или полигон"; но сейчас - треугольник).
 <pre><button class="doit" onclick="doit(line1.textContent)">отправить в терминал</button><code id="line1" data-language="ol">
 (glBegin GL_TRIANGLES)
 </code></pre>
 
-1. Поставить первую точку
+* Поставить первую точку
 <pre><button class="doit" onclick="doit(line2.textContent)">отправить в терминал</button><code id="line2" data-language="ol">
 (glVertex 0.0 0.5)
 </code></pre>
 
-1. Поставить вторую точку
+* Поставить вторую точку
 <pre><button class="doit" onclick="doit(line3.textContent)">отправить в терминал</button><code id="line3" data-language="ol">
 (glVertex -0.5 -0.5)
 </code></pre>
 
-1. Поставить третью точку
+* Поставить третью точку
 <pre><button class="doit" onclick="doit(line4.textContent)">отправить в терминал</button><code id="line4" data-language="ol">
 (glVertex 0.5 -0.5)
 </code></pre>
 
-1. Положить карандаш.
+* Положить карандаш.
 <pre><button class="doit" onclick="doit(line5.textContent)">отправить в терминал</button><code id="line5" data-language="ol">
 (glEnd)
 </code></pre>
@@ -45,6 +45,19 @@ categories: ru
 (glVertex 0.5 -0.5)
 (glEnd)
 </code></pre>
+
+Temp (цветной треугольник):
+<pre><button class="doit" onclick="doit(temp.textContent)">отправить в терминал</button><code id="temp" data-language="ol">
+(glBegin GL_TRIANGLES)
+(glColor 1.0 0.0 0.0)
+(glVertex 0.0 0.5)
+(glColor 0.0 1.0 0.0)
+(glVertex -0.5 -0.5)
+(glColor 0.0 0.0 1.0)
+(glVertex 0.5 -0.5)
+(glEnd)
+</code></pre>
+
 
 Теперь разберем эту "программу" построчно.
 

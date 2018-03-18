@@ -20,6 +20,27 @@ categories: ru
 
 Для удобства тестирования примеров "не вставая со стула" над терминалом есть кнопочка <a href="#" onclick="javascript:(function(e) {switchTerminal(e)})()">switch</a>, позволяющая переключать текстовый вывод терминала и OpenGL окно вывода. Для этих же целей можно использовать клавишу Escape.
 
+## Очистка поверхности
+
+Хорошим тоном считается перед началом чего-либо прибраться на рабочем месте. И нам тоже стоит созданную область вывода очистить (залить монотонным цветом). Делается это в два этапа:
+
+* Задать цвет очистки
+<pre><button class="doit" onclick="doit(line1.textContent)">отправить в терминал</button><code id="line1" data-language="ol">
+(glClearColor 0.2 0.2 0.2 1)
+</code></pre>
+
+* Непосредственно выполнить очистку
+<pre><button class="doit" onclick="doit(line2.textContent)">отправить в терминал</button><code id="line2" data-language="ol">
+(glClear GL_COLOR_BUFFER_BIT)
+</code></pre>
+
+Отправьте все примеры в терминал последовательно, либо сразу все вместе из примера ниже.
+<pre><button class="doit" onclick="doit(lines.textContent)">отправить в терминал</button><code id="lines" data-language="ol">
+(glClearColor 0.2 0.2 0.2 1)
+(glClear GL_COLOR_BUFFER_BIT)
+</code></pre>
+
+
 ## Я любознателен, я хочу деталей!
 
 Кому действительно интересно покопаться в "кишках" механизма создания окон вывода, OpenGL контекста и связывания второго с первым - прошу посмотреть сюда:
