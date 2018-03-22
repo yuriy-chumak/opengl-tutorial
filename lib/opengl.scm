@@ -61,7 +61,8 @@
       ; drawing
       ((glBegin mode)
          (let*((dictionary (put dictionary 'mode mode))
-               (dictionary (put dictionary 'data '()))
+               (dictionary (put dictionary 'vertices '()))
+               (dictionary (put dictionary 'colors '()))
                (dictionary (put dictionary 'vbos ((lambda ()
                               (define vbo '(0))
                               (glGenBuffers 1 vbo)
