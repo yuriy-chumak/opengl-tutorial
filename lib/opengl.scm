@@ -11,7 +11,7 @@
       opengl:init)
 
    (import
-      (r5rs core)
+      (scheme core)
       (EGL version-1-1)
       (OpenGL ES version-2-0)
       (owl interop) (owl ff) (owl io)
@@ -114,9 +114,9 @@
 
 (define opengl:init
 (let*((init (lambda (title)
-               (let ((major '(0))
-                     (minor '(0))
-                     (numConfigs '(0))
+               (let ((major (make-32bit-array 1))
+                     (minor (make-32bit-array 1))
+                     (numConfigs (make-32bit-array 1))
                      (attribList '(
                         #x3024 5 ; red
                         #x3023 6 ; green
@@ -135,13 +135,13 @@
                (mail 'opengl (tuple 'set-display display))
 
                (eglInitialize display major minor)
-               (print "eglInitialize: " (car major) "/" (car minor))
+               (print "eglInitialize: " (car major) "." (car minor))
 
-               (eglGetConfigs display #f 0 numConfigs)
+               (eglGetConfigs display config 0 numConfigs)
                (print "eglGetConfigs: " (car numConfigs))
 
                (eglChooseConfig display attribList config (car numConfigs) numConfigs)
-               (define surface (eglCreateWindowSurface display (car config) 2 #false))                 ; temp "2" instead of XCreateWindow
+               (define surface (eglCreateWindowSurface display (car config) (vm:cast 2 type-vptr) #false)) ; temp "2" instead of XCreateWindow
                (mail 'opengl (tuple 'set-surface surface))
 
                (define context (eglCreateContext display (car config) EGL_NO_CONTEXT contextAttribs))
