@@ -141,7 +141,7 @@
                (print "eglGetConfigs: " (car numConfigs))
 
                (eglChooseConfig display attribList config (car numConfigs) numConfigs)
-               (define surface (eglCreateWindowSurface display (car config) (vm:cast 2 type-vptr) #false)) ; temp "2" instead of XCreateWindow
+               (define surface (eglCreateWindowSurface display (car config) 2 #false)) ; temp "2" instead of XCreateWindow
                (mail 'opengl (tuple 'set-surface surface))
 
                (define context (eglCreateContext display (car config) EGL_NO_CONTEXT contextAttribs))
