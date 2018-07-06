@@ -12,6 +12,20 @@ categories: ru
 
 Чтобы нарисовать треугольник, нам надо проделать те же действия, что и с рисованием треугольников на бумаге. А именно:
 
+Вот готовый привер, можете его отправить в терминал сразу весь, или сделать это построчно во время разбора ниже.
+<pre><button class="doit" onclick="doit(lines.textContent)">отправить в терминал</button><code id="lines" data-language="ol">
+(import (lib opengl))
+
+(glBegin GL_TRIANGLES)
+(glVertex 0.0 0.5)
+(glVertex -0.5 -0.5)
+(glVertex 0.5 -0.5)
+(glEnd)
+
+(gl:finish)
+</code></pre>
+
+
 * Решить, что мы будем рисовать именно треугольник (на будущее - мы, в принципе, можем решить и "я не знаю, что это будет - треугольник или полигон"; но сейчас - треугольник).
 <pre><button class="doit" onclick="doit(line1.textContent)">отправить в терминал</button><code id="line1" data-language="ol">
 (glBegin GL_TRIANGLES)
@@ -34,15 +48,6 @@ categories: ru
 
 * Положить карандаш.
 <pre><button class="doit" onclick="doit(line5.textContent)">отправить в терминал</button><code id="line5" data-language="ol">
-(glEnd)
-</code></pre>
-
-Отправьте все примеры в терминал последовательно, либо сразу все вместе из примера ниже.
-<pre><button class="doit" onclick="doit(lines.textContent)">отправить в терминал</button><code id="lines" data-language="ol">
-(glBegin GL_TRIANGLES)
-(glVertex 0.0 0.5)
-(glVertex -0.5 -0.5)
-(glVertex 0.5 -0.5)
 (glEnd)
 </code></pre>
 

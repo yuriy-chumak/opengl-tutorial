@@ -42,7 +42,8 @@ function doit(text)
    terminal.exec(text);
    terminal.focus();
 
-   stdInput += unescape(encodeURIComponent("(print)"));
+   // уже не нужен, вместо него (gl:finish)
+   //stdInput += unescape(encodeURIComponent("(print)"));
 //
 // hideTerminal();
 }
@@ -81,7 +82,7 @@ $('#terminal').mousewheel(function(event) {
 var Module = {
    //arguments: ['/repl', 'test.lisp', '--interactive'],
    arguments: ['/repl', '-', '--interactive'],
-   //dynamicLibraries: ['emscripten.js'],
+   // dynamicLibraries: ['libNewton.js'],
    TOTAL_MEMORY: 67108864,
 
    preRun: function() {

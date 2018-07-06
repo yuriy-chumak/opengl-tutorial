@@ -8,15 +8,18 @@
       glVertex glVertex2f glVertex3f
       glColor glColor3f
 
+      gl:set-window-title gl:finish
       opengl:init)
 
    (import
       (scheme core)
+      (r5rs srfi-1)
+
       (EGL version-1-1)
       (OpenGL ES version-2-0)
-      (owl interop) (owl ff) (owl io)
+
       (otus ffi)
-      (r5rs srfi-1)
+      (owl interop) (owl ff) (owl io)
       (owl string) (owl math))
 
    (begin
@@ -224,6 +227,11 @@
       ((title) (init title)))))
 
    (opengl:init "lib/opengl")
+
+   (define (gl:set-window-title title)
+      #true) ; do nothing
+   (define (gl:finish)
+      (print)) ; do nothing
 
 
    ; opengl function emulation
