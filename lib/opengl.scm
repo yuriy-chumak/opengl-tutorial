@@ -6,10 +6,9 @@
 
       glBegin glEnd
       glVertex glVertex2f glVertex3f
-      glColor glColor3f
+      glColor glColor3f glColor4f
 
-      gl:set-window-title gl:finish
-      opengl:init)
+      gl:set-window-title finish)
 
    (import
       (scheme core)
@@ -73,8 +72,8 @@
                               (glGenBuffers 1 cbo)
                               (list (car vbo) (car cbo)))))))
             (this dictionary)))
-      ((glColor r g b)
-         (let ((dictionary (put dictionary 'color (list r g b 1))))
+      ((glColor r g b a)
+         (let ((dictionary (put dictionary 'color (list r g b a))))
             (this dictionary)))
       ((glVertex x y z)
          (let*((dictionary (put dictionary 'vertices (append
@@ -230,7 +229,7 @@
 
    (define (gl:set-window-title title)
       #true) ; do nothing
-   (define (gl:finish)
+   (define (finish)
       (print)) ; do nothing
 
 
@@ -251,10 +250,14 @@
          (glVertex3f x y z))))
    ; colors
    (define (glColor3f r g b)
-      (mail 'opengl (tuple 'glColor r g b)))
+      (mail 'opengl (tuple 'glColor r g b 1)))
+   (define (glColor4f r g b a)
+      (mail 'opengl (tuple 'glColor r g b a)))
+
    (define glColor (case-lambda
       ((r g b)
-         (glColor3f r g b))))
-
+         (glColor3f r g b))
+      ((r g b a)
+         (glColor4f r g b a))))
 
 ))
