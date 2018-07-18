@@ -8,6 +8,11 @@
       glVertex glVertex2f glVertex3f
       glColor glColor3f glColor4f
 
+      glMatrixMode
+         GL_MODELVIEW_MATRIX GL_PROJECTION_MATRIX GL_TEXTURE_MATRIX
+      glMultMatrix glMultMatrixf glMultMatrixd
+      glOrtho
+
       gl:set-window-title finish)
 
    (import
@@ -23,7 +28,26 @@
 
    (begin
 
+   (define GL_MODELVIEW_MATRIX               #x0BA6)
+   (define GL_PROJECTION_MATRIX              #x0BA7)
+   (define GL_TEXTURE_MATRIX                 #x0BA8)
+
+; utils:
+   (define (matrix-multiply matrix1 matrix2)
+   (map
+      (lambda (row)
+         (apply map
+            (lambda column
+               (apply + (map * row column)))
+            matrix2))
+      matrix1))
+
+
+; opengl server
 (fork-server 'opengl (lambda ()
+   (define identity-matrix '((1 0 0 0)  (0 1 0 0)  (0 0 1 0)  (0 0 0 1)))
+
+
 (let this ((dictionary #empty))
 (let* ((envelope (wait-mail))
        (sender msg envelope))
@@ -60,11 +84,25 @@
          (mail sender (get dictionary 'program 0))
          (this dictionary))
 
+      ; matrices
+      ((set-matrix-mode mode)
+         (this (put dictionary 'matrix-mode mode)))
+;      ((set-model-view-matrix matrix)
+;         (this (put dictionary 'model-view matrix)))
+;      ((set-projection-matrix matrix)
+;         (this (put dictionary 'projection matrix)))
+
+      ((mult-matrix matrix)
+         (this (put dictionary (get dictionary 'matrix-mode GL_MODELVIEW_MATRIX)
+            (matrix-multiply
+               (get dictionary (get dictionary 'matrix-mode GL_MODELVIEW_MATRIX) identity-matrix)
+               matrix))))
+
       ; drawing
       ((glBegin mode)
          (let*((dictionary (put dictionary 'mode mode))
-               (dictionary (put dictionary 'vertices '()))
-               (dictionary (put dictionary 'colors '()))
+               (dictionary (put dictionary 'vertices #null))
+               (dictionary (put dictionary 'colors #null))
                (dictionary (put dictionary 'vbos ((lambda ()
                               (define vbo '(0))
                               (glGenBuffers 1 vbo)
@@ -85,6 +123,7 @@
             (this dictionary)))
       ((glEnd)
          (let ((vbos (get dictionary 'vbos '(0 0)))
+               (mode (get dictionary 'mode GL_TRIANGLES))
                (vertices (get dictionary 'vertices '()))
                (colors (get dictionary 'colors '()))
                (vPosition (glGetAttribLocation (get dictionary 'program 0) "vPosition"))
@@ -95,6 +134,11 @@
             (glBufferData GL_ARRAY_BUFFER (* 4 (length colors)) colors GL_STATIC_DRAW) ; 4 = sizeof(float)
 
             (glUseProgram (get dictionary 'program 0))
+            ; matrices
+            (glUniformMatrix4fv (glGetUniformLocation (get dictionary 'program 0) (c-string "uModelViewMatrix"))
+               1 GL_FALSE (apply append (get dictionary GL_MODELVIEW_MATRIX identity-matrix)))
+            (glUniformMatrix4fv (glGetUniformLocation (get dictionary 'program 0) (c-string "uProjectionMatrix"))
+               1 GL_FALSE (apply append (get dictionary GL_PROJECTION_MATRIX identity-matrix)))
             ; vertices
             (glBindBuffer GL_ARRAY_BUFFER (first vbos))
             (glVertexAttribPointer vPosition 3 GL_FLOAT GL_FALSE 0 #false)
@@ -103,12 +147,14 @@
             (glBindBuffer GL_ARRAY_BUFFER (second vbos))
             (glVertexAttribPointer vColor 4 GL_FLOAT GL_FALSE 0 #false)
             (glEnableVertexAttribArray vColor)
-
-            (glDrawArrays GL_TRIANGLES 0 3)
+            ;(print "mode: " mode)
+            ;(print "(/ (length vertices) 3): " (/ (length vertices) 3))
+            ;(print vertices)
+            (glDrawArrays mode 0 (/ (length vertices) 3))
 
             ; free resources
-            ;(glDeleteBuffers (length vbos) vbos)
-         (this dictionary)))
+            (glDeleteBuffers (length vbos) vbos))
+         (this dictionary))
 
       (else
          (print-to stderr "Unknown opengl server command " msg)
@@ -126,7 +172,7 @@
                         #x3021 8 ; alpha
                         #x3025 8 ; depth
                         ;#x3026 ; stencil
-                        #x3032 1 ; sample buffers
+                        #x3032 0 ; sample buffers
                         #x3038)) ; EGL_NONE
                      (config (make-vptr-array 1))
                      (contextAttribs '(
@@ -154,10 +200,13 @@
                   attribute vec4 vPosition;
                   attribute vec4 vColor;
 
+                  uniform mat4 uProjectionMatrix;
+                  uniform mat4 uModelViewMatrix;
+
                   varying vec4 va_Color;
                   void main()
                   {
-                     gl_Position = vPosition;
+                     gl_Position = uProjectionMatrix * (uModelViewMatrix * vPosition);
                      va_Color = vColor;
                   }")
                (define fragment-shader "
@@ -259,5 +308,26 @@
          (glColor3f r g b))
       ((r g b a)
          (glColor4f r g b a))))
+
+   ; matrices
+   (define (glMatrixMode mode)
+      (mail 'opengl (tuple 'set-matrix-mode mode)))
+
+   (define (glMultMatrix matrix)
+      (mail 'opengl (tuple 'mult-matrix matrix)))
+   (define glMultMatrixf glMultMatrix)
+   (define glMultMatrixd glMultMatrix)
+
+   (define (glOrtho left right  bottom top  near far)
+      (glMultMatrix
+         (let ((Tx (/ (+ right left) (- right left)))
+               (Ty (/ (+ top bottom) (- top bottom)))
+               (Tz (/ (+ far near)   (- far near))))
+               (list
+                  (list (/ 2 (- right left)) 0 0 Tx)
+                  (list 0 (/ 2 (- top bottom)) 0 Ty)
+                  (list 0 0 (/ -2 (- far near))  Tz) ; z is reversed
+                  (list 0 0 0                    1)))))
+   
 
 ))
