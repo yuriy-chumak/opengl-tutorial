@@ -42,7 +42,8 @@ categories: ru
 <pre><button class="doit" onclick="doit(ortho.textContent)">отправить в терминал</button><code id="ortho" data-language="ol">
 (import (lib opengl))
 
-(glMatrixMode GL_MODELVIEW_MATRIX)
+(glClear GL_COLOR_BUFFER_BIT)
+;(glMatrixMode GL_MODELVIEW_MATRIX)
 (glOrtho -2 2 -1.2 1.2 -1 1)
 
 (glBegin GL_LINES)
