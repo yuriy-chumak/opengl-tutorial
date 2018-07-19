@@ -23,7 +23,6 @@ categories: ru
       (iota 20 -10))
 (glEnd)
 
-(glClearColor 1 0 0 1)
 (glBegin GL_LINES)
    (glColor 0 1 0) ; y
       (glVertex 0 -1)
