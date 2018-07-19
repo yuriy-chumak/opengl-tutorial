@@ -32,7 +32,14 @@
    (define GL_PROJECTION_MATRIX              #x0BA7)
    (define GL_TEXTURE_MATRIX                 #x0BA8)
 
-; utils:
+; opengl server
+(fork-server 'opengl (lambda ()
+   ; some internal staff
+   (define identity-matrix '(
+      (1 0 0 0)
+      (0 1 0 0)
+      (0 0 1 0)
+      (0 0 0 1)))
    (define (matrix-multiply matrix1 matrix2)
    (map
       (lambda (row)
@@ -42,12 +49,7 @@
             matrix2))
       matrix1))
 
-
-; opengl server
-(fork-server 'opengl (lambda ()
-   (define identity-matrix '((1 0 0 0)  (0 1 0 0)  (0 0 1 0)  (0 0 0 1)))
-
-
+; main loop
 (let this ((dictionary #empty))
 (let* ((envelope (wait-mail))
        (sender msg envelope))
@@ -93,10 +95,11 @@
 ;         (this (put dictionary 'projection matrix)))
 
       ((mult-matrix matrix)
+         ; default matrix (if no mode) is modelview
          (this (put dictionary (get dictionary 'matrix-mode GL_MODELVIEW_MATRIX)
-            (matrix-multiply
-               (get dictionary (get dictionary 'matrix-mode GL_MODELVIEW_MATRIX) identity-matrix)
-               matrix))))
+                  (matrix-multiply
+                     (get dictionary (get dictionary 'matrix-mode GL_MODELVIEW_MATRIX) identity-matrix)
+                     matrix))))
 
       ; drawing
       ((glBegin mode)

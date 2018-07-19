@@ -6,29 +6,36 @@
    });
 function showTerminal()
 {
-   $("#terminal").show();
+   savedFocus = document.activeElement;
+   $("#canvas").hide();
    terminal.resume();
+
+   if (document.activeElement != undefined)
+      document.activeElement.blur();
 }
 
 function hideTerminal()
 {
-   // resize the canvas
+   terminal.pause();
+
+   // resize the canvas to terminal
    $("#canvas").css({
       'height': $("#terminal").outerHeight(),
       'width':  $("#terminal").outerWidth()
    });
+   $("#canvas").show();
 
-   terminal.pause();
-   $("#terminal").hide();
+   if (savedFocus != undefined)
+      savedFocus.focus();
 }
 
 function switchTerminal(e)
 {
-   if ($("#terminal").is(":visible")) {
-      hideTerminal();
+   if ($("#canvas").is(":visible")) {
+      showTerminal();
    }
    else {
-      showTerminal();
+      hideTerminal();
    }
 
    if (e != undefined)
@@ -39,8 +46,8 @@ function doit(text)
 {
    showTerminal();
 
-   terminal.exec(text);
    terminal.focus();
+   terminal.exec(text);
 
    // уже не нужен, вместо него (gl:finish)
    //stdInput += unescape(encodeURIComponent("(print)"));
@@ -134,10 +141,10 @@ var Module = {
 
       //console.log("text: [", text, "]");
 
+      // reaction on "(print)" - show canvas
       if (text=="> ") {
          terminal.ready = true;
-         $("#terminal").hide();
-         terminal.pause();
+         hideTerminal();
       }
 
       // let's process OL's prompt:
@@ -153,7 +160,7 @@ var Module = {
       console.log("error: ", text);
       terminal.error(text);
 
-      $("#terminal").show();
+      showTerminal();
    },
    canvas: (function() {
       var canvas = document.getElementById('canvas');
@@ -165,11 +172,12 @@ var Module = {
       // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
       canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
 
-      // resize to terminal sizes
+      // and resize to terminal sizes
       $("#canvas").css({
          'height': $("#terminal").outerHeight(),
          'width':  $("#terminal").outerWidth()
       });
+      showTerminal(); // а надо?
       return canvas;
    })(),
 
@@ -206,7 +214,8 @@ var Libraries = [
       { path: "/lib",  name: "opengl.scm", file: "lib/opengl.scm" },
 
       { path: "/EGL",       name: "version-1-1.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/EGL/version-1-1.scm" },
-      { path: "/OpenGL/ES", name: "version-2-0.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/OpenGL/ES/version-2-0.scm" },
+//      { path: "/OpenGL/ES", name: "version-2-0.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/OpenGL/ES/version-2-0.scm" },
+      { path: "/OpenGL/ES", name: "version-2-0.scm", file: "lib/version-2-0.scm" },
 
 //    { path: "/", name: "init.lisp", file: "init.lisp" },
       { path: "/", name: "repl", file: "https://rawgit.com/yuriy-chumak/ol/master/repl" }
