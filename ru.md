@@ -29,7 +29,7 @@ categories: index
 1. [Создаем окно](?ru/create-window)
 1. [Простой треугольник](?ru/simple-triangle)
 1. [Простой цветной треугольник](?ru/simple-colored-triangle)
-1. [Система координат и линии](?ru/coordinate-system)
+1. [Система координат и линии, ортографическая проекция](?ru/coordinate-system)
 1. [Сдвиги и вращения](?ru/transformations)
 
 <small style="float: right">Copyright (c) 2018 Yuriy Chumak</small>

@@ -29,8 +29,8 @@ categories: ru
       (glVertex 0 -1)
       (glVertex 0 1)
    (for-each (lambda (x)
-         (glVertex -0.04 (/ x 10))
-         (glVertex 0.04 (/ x 10)))
+         (glVertex -0.02 (/ x 10))
+         (glVertex 0.02 (/ x 10)))
       (iota 20 -10))
 (glEnd)
 

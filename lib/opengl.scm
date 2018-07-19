@@ -11,7 +11,7 @@
       glMatrixMode
          GL_MODELVIEW_MATRIX GL_PROJECTION_MATRIX GL_TEXTURE_MATRIX
       glMultMatrix glMultMatrixf glMultMatrixd
-      glOrtho
+      glOrtho glPushMatrix glPopMatrix
 
       gl:set-window-title finish)
 
@@ -93,6 +93,18 @@
 ;         (this (put dictionary 'model-view matrix)))
 ;      ((set-projection-matrix matrix)
 ;         (this (put dictionary 'projection matrix)))
+      ((push-matrix)
+         (this (put dictionary 'matrices-stack (cons
+            (get dictionary (get dictionary 'matrix-mode GL_MODELVIEW_MATRIX) identity-matrix)
+            (get dictionary 'matrices-stack #null)))))
+      ((pop-matrix)
+         (let ((stack (get dictionary 'matrices-stack #null)))
+            (print "stack: " stack)
+            (if (null? stack)
+               (this dictionary)
+               (this (put (put dictionary 'matrices-stack (cdr stack))
+                        (get dictionary 'matrix-mode GL_MODELVIEW_MATRIX)
+                        (car stack))))))
 
       ((mult-matrix matrix)
          ; default matrix (if no mode) is modelview
@@ -315,6 +327,10 @@
    ; matrices
    (define (glMatrixMode mode)
       (mail 'opengl (tuple 'set-matrix-mode mode)))
+   (define (glPopMatrix)
+      (mail 'opengl (tuple 'pop-matrix)))
+   (define (glPushMatrix)
+      (mail 'opengl (tuple 'push-matrix)))
 
    (define (glMultMatrix matrix)
       (mail 'opengl (tuple 'mult-matrix matrix)))
