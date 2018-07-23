@@ -214,8 +214,8 @@ var Libraries = [
       { path: "/lib",  name: "opengl.scm", file: "lib/opengl.scm" },
 
       { path: "/EGL",       name: "version-1-1.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/EGL/version-1-1.scm" },
-//      { path: "/OpenGL/ES", name: "version-2-0.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/OpenGL/ES/version-2-0.scm" },
-      { path: "/OpenGL/ES", name: "version-2-0.scm", file: "lib/version-2-0.scm" },
+      { path: "/OpenGL/ES", name: "version-2-0.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/OpenGL/ES/version-2-0.scm" },
+//    { path: "/OpenGL/ES", name: "version-2-0.scm", file: "lib/version-2-0.scm" },
 
 //    { path: "/", name: "init.lisp", file: "init.lisp" },
       { path: "/", name: "repl", file: "https://rawgit.com/yuriy-chumak/ol/master/repl" }
