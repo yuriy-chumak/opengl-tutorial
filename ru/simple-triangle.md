@@ -73,8 +73,6 @@ categories: ru
    (glVertex -0.5 -0.5)
    (glVertex 0.5 -0.5)
 (glEnd)
-
-(finish)
 </code></pre>
 
 [Дальше](?ru/simple-colored-triangle)

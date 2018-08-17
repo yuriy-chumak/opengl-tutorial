@@ -76,8 +76,6 @@ categories: ru
    (glVertex -0.5 -0.5)
    (glVertex 0.5 -0.5)
 (glEnd)
-
-(finish)
 </code></pre>
 
 А это разноцветный треугольник:
@@ -95,6 +93,4 @@ categories: ru
    (glColor3f 0.0 0.0 1.0)
    (glVertex 0.5 -0.5)
 (glEnd)
-
-(finish)
 </code></pre>

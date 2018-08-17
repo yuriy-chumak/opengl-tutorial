@@ -32,8 +32,6 @@ categories: ru
          (glVertex 0.02 (/ x 10)))
       (iota 20 -10))
 (glEnd)
-
-(finish)
 </code></pre>
 
 ## Ортографическая проекция
@@ -41,6 +39,7 @@ categories: ru
 <pre><button class="doit" onclick="doit(ortho.textContent)">отправить в терминал</button><code id="ortho" data-language="ol">
 (import (lib opengl))
 
+(glClearColor 0.3 0.3 0.3 1.)
 (glClear GL_COLOR_BUFFER_BIT)
 ;(glMatrixMode GL_MODELVIEW_MATRIX)
 (glOrtho -2 2 -1.2 1.2 -1 1)
@@ -65,6 +64,4 @@ categories: ru
          (glVertex 0.04 (/ x 10)))
       (iota 20 -10))
 (glEnd)
-
-(finish)
 </code></pre>

@@ -169,6 +169,7 @@
 
             ; free resources
             (glDeleteBuffers (length vbos) vbos))
+         (print) ; hack, this forces ui switch from console to canvas
          (this dictionary))
 
       (else

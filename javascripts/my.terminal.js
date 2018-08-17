@@ -1,9 +1,10 @@
 // show/hide terminal
-   $(document).keydown(function(e) {
-      if (e.keyCode === 27/*192*/) {
-         switchTerminal(e);
-      }
-   });
+$(document).keydown(function(e) {
+   if (e.keyCode === 27/*192*/) {
+      switchTerminal(e);
+   }
+});
+
 function showTerminal()
 {
    savedFocus = document.activeElement;
@@ -47,12 +48,10 @@ function doit(text)
    showTerminal();
 
    terminal.focus();
+//   console.log("text:", text);
+   if (text.indexOf("\n") == 0)
+      text = text.substring(1);
    terminal.exec(text);
-
-   // уже не нужен, вместо него (gl:finish)
-   //stdInput += unescape(encodeURIComponent("(print)"));
-//
-// hideTerminal();
 }
 
 // TERMINAL:
@@ -124,11 +123,10 @@ var Module = {
       //var GLctx; GL.init()
    },
    postRun: function() {
-      console.log("postRun");
       terminal.focus();
+      terminal.exec("\n"); // start loading process.
+//    terminal.exec("(import (lib opengl))");
       terminal.resume();
-
-      terminal.exec("(import (lib opengl))");
    },
 
    print: function(text) {
@@ -152,9 +150,12 @@ var Module = {
       terminal.position(1);
       while (text.indexOf("> ") == 0)
          text = text.substring(2);
+      terminal.resume();
       terminal.echo(text);
 
-      // this: hide terminal when first empty line received
+      // well, we got greeting. let's import (lib opengl)
+      if (text == "type ',help' to help, ',quit' to end session.")
+         terminal.exec("(import (lib opengl))");
    },
    printErr: function(text) {
       console.log("error: ", text);
@@ -165,7 +166,9 @@ var Module = {
    canvas: (function() {
       var canvas = document.getElementById('canvas');
 
-      // please, add to glutCreateContext() 'preserveDrawingBuffer: true' attribute!
+      // please, add to glutCreateWindow() 'preserveDrawingBuffer: true' attribute!
+      // it should looks like
+      // function _glutCreateWindow(name){var contextAttributes={antialias:(GLUT.initDisplayMode&128)!=0,depth:(GLUT.initDisplayMode&16)!=0,stencil:(GLUT.initDisplayMode&32)!=0,alpha:(GLUT.initDisplayMode&8)!=0,preserveDrawingBuffer:true}
 
       // As a default initial behavior, pop up an alert when webgl context is lost. To make your
       // application robust, you may want to override this behavior before shipping!
@@ -211,6 +214,7 @@ window.onerror = function(event) {
 // FILE SYSTEM
 var Libraries = [
       { path: "/otus", name: "ffi.scm",    file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/otus/ffi.scm" },
+//      { path: "/otus", name: "ffi.scm",    file: "lib/ffi.scm" },
       { path: "/lib",  name: "opengl.scm", file: "lib/opengl.scm" },
 
       { path: "/EGL",       name: "version-1-1.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/EGL/version-1-1.scm" },
