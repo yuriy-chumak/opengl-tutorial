@@ -23,8 +23,8 @@
       (OpenGL ES version-2-0)
 
       (otus ffi)
-      (owl interop) (owl ff) (owl io)
-      (owl string) (owl math))
+      (owl interop) (owl io) (owl list)
+      (owl string) (owl math) (owl ff))
 
    (begin
 
@@ -293,7 +293,7 @@
    (opengl:init "lib/opengl")
 
    (define (gl:set-window-title title)
-      #true) ; do nothing
+      (exec (fold string-append (string #\; 0) (list "window.document.title = '" title "'"))))
    
 
    ; opengl function emulation
