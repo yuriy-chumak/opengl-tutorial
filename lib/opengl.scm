@@ -13,7 +13,7 @@
       glMultMatrix glMultMatrixf glMultMatrixd
       glOrtho glPushMatrix glPopMatrix
 
-      gl:set-window-title finish)
+      gl:set-window-title)
 
    (import
       (scheme core)
@@ -294,9 +294,7 @@
 
    (define (gl:set-window-title title)
       #true) ; do nothing
-   (define (finish)
-      (print)) ; do nothing
-
+   
 
    ; opengl function emulation
    (define (glBegin mode)

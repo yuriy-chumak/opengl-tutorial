@@ -151,6 +151,9 @@ var Module = {
       while (text.indexOf("> ") == 0)
          text = text.substring(2);
       terminal.resume();
+
+      if (text == "'delivered") // just filter the output log
+        return;
       terminal.echo(text);
 
       // well, we got greeting. let's import (lib opengl)
