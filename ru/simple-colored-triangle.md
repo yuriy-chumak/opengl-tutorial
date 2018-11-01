@@ -25,7 +25,7 @@ categories: ru
 
 > glColor3f принимает три параметра - R (red, красный), G (green, зеленый) и B (blue, синий) компоненты цвета. Это три вещественных числа от 0 до 1, указывающие на уровень яркости соответствующего компонента цветовой матрицы. 0 - компонент выключен, 1 - полностью включен. Красный цвет - это 1,0,0; синий - 0,0,1; а желтый - 0,1,1.
 
-
+---
 * Указываем, что рисуем треугольник.
 <pre><button class="doit" onclick="doit(line1.textContent)">отправить в терминал</button><code id="line1" data-language="ol">
 (glBegin GL_TRIANGLES)
@@ -60,37 +60,36 @@ categories: ru
 
 Точно так же, как и у glVertex (смотрим [прошлый урок](?ru/simple-triangle)) функция glColor имеет много суффиксов. Вот некоторые из них: glColor3b, glColor3ubv, glColor4s, glColor3f, и т.д. Все эти функции своими суффиксами тоже подсказывают библиотеке какие именно числа мы используем.
 
-И точно так же как с glVertex мы будем использовать упрощенную функцию glColor. Эта функция будет превращать (glColor r g b) в (glColor3f r g b) и (glColor r g b a) в (glColor4f r g b a).
-
-
 ## Все вместе
 
 Итак, вся наша программа в окончательном виде будет выглядеть так:
 
 <pre><button class="doit" onclick="doit(lines.textContent)">отправить в терминал</button><code id="lines" data-language="ol">
-(import (lib opengl))
+(import (lib gl2))
 
-(glColor 1.0 0.0 0.4)
+(glColor3f 1.0 0.0 0.4)
 (glBegin GL_TRIANGLES)
-   (glVertex 0.0 0.5)
-   (glVertex -0.5 -0.5)
-   (glVertex 0.5 -0.5)
+   (glVertex2f 0.0 0.5)
+   (glVertex2f -0.5 -0.5)
+   (glVertex2f 0.5 -0.5)
 (glEnd)
 </code></pre>
 
 А это разноцветный треугольник:
 
 <pre><button class="doit" onclick="doit(lines2.textContent)">отправить в терминал</button><code id="lines2" data-language="ol">
-(import (lib opengl))
+(import (lib gl2))
 
 (glBegin GL_TRIANGLES)
    (glColor3f 1.0 0.0 0.0)
-   (glVertex 0.0 0.5)
-   
+   (glVertex2f 0.0 0.5)
+
    (glColor3f 0.0 1.0 0.0)
-   (glVertex -0.5 -0.5)
-   
+   (glVertex2f -0.5 -0.5)
+
    (glColor3f 0.0 0.0 1.0)
-   (glVertex 0.5 -0.5)
+   (glVertex2f 0.5 -0.5)
 (glEnd)
 </code></pre>
+
+[Дальше](?ru/coordinate-system)

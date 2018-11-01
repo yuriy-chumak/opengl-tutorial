@@ -50,8 +50,8 @@ Rainbow.extend('ol', [
     },
     {
         'matches': {
-            1: 'entity.function'
+            1: 'entity.function.OpenGL'
         },
-        'pattern': /\(\s*(glBegin|glEnd|glVertex|glVertex2f|glVertex3f|glColor|glColor3f|glColor4f)(?=[\]()\s#])/g
+        'pattern': /\(\s*(glBegin|glEnd|glVertex|glVertex2f|glVertex3f|glColor|glColor3f|glColor4f|glClear|glClearColor|glMatrixMode|glLoadIdentity|glOrtho)(?=[\]()\s#])/g
     }
 ], true);

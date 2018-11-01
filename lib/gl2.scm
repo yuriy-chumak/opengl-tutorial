@@ -1,15 +1,16 @@
-(define-library (lib opengl)
+(define-library (lib gl2)
    (export
       (exports (EGL version-1-1))
       (exports (OpenGL ES version-2-0))
       (exports (otus ffi))
 
       glBegin glEnd
-      glVertex glVertex2f glVertex3f
-      glColor glColor3f glColor4f
+      glVertex2f glVertex3f
+      glColor3f glColor4f
 
       glMatrixMode
          GL_MODELVIEW_MATRIX GL_PROJECTION_MATRIX GL_TEXTURE_MATRIX
+      glLoadIdentity
       glMultMatrix glMultMatrixf glMultMatrixd
       glOrtho glPushMatrix glPopMatrix
 
@@ -32,22 +33,25 @@
    (define GL_PROJECTION_MATRIX              #x0BA7)
    (define GL_TEXTURE_MATRIX                 #x0BA8)
 
-; opengl server
-(fork-server 'opengl (lambda ()
-   ; some internal staff
-   (define identity-matrix '(
+   ; internal variable
+   (setq identity-matrix '(
       (1 0 0 0)
       (0 1 0 0)
       (0 0 1 0)
       (0 0 0 1)))
+
+; opengl server
+(fork-server 'opengl (lambda ()
+   ; some internal staff
    (define (matrix-multiply matrix1 matrix2)
-   (map
-      (lambda (row)
-         (apply map
-            (lambda column
-               (apply + (map * row column)))
-            matrix2))
-      matrix1))
+      (map
+         (lambda (row)
+            (apply map
+               (lambda column
+                  (apply + (map * row column)))
+               matrix2))
+         matrix1))
+   (define default-color '(1 1 1 1))
 
 ; main loop
 (let this ((dictionary #empty))
@@ -89,6 +93,8 @@
       ; matrices
       ((set-matrix-mode mode)
          (this (put dictionary 'matrix-mode mode)))
+      ((set-matrix matrix)
+         (this (put dictionary (get dictionary 'matrix-mode GL_MODELVIEW_MATRIX) matrix)))
 ;      ((set-model-view-matrix matrix)
 ;         (this (put dictionary 'model-view matrix)))
 ;      ((set-projection-matrix matrix)
@@ -134,19 +140,20 @@
                               (list x y z))))
                (dictionary (put dictionary 'colors (append
                               (get dictionary 'colors '())
-                              (get dictionary 'color '(1 1 1 1))))))
+                              (get dictionary 'color default-color)))))
             (this dictionary)))
       ((glEnd)
          (let ((vbos (get dictionary 'vbos '(0 0)))
                (mode (get dictionary 'mode GL_TRIANGLES))
                (vertices (get dictionary 'vertices '()))
                (colors (get dictionary 'colors '()))
+
                (vPosition (glGetAttribLocation (get dictionary 'program 0) "vPosition"))
                (vColor    (glGetAttribLocation (get dictionary 'program 0) "vColor")))
-            (glBindBuffer GL_ARRAY_BUFFER (first vbos))
-            (glBufferData GL_ARRAY_BUFFER (* 4 (length vertices)) vertices GL_STATIC_DRAW) ; 4 = sizeof(float)
-            (glBindBuffer GL_ARRAY_BUFFER (second vbos))
-            (glBufferData GL_ARRAY_BUFFER (* 4 (length colors)) colors GL_STATIC_DRAW) ; 4 = sizeof(float)
+            (glBindBuffer GL_ARRAY_BUFFER (list-ref vbos 0))
+            (glBufferData GL_ARRAY_BUFFER (* (sizeof fft-float) (length vertices)) vertices GL_STATIC_DRAW)
+            (glBindBuffer GL_ARRAY_BUFFER (list-ref vbos 1))
+            (glBufferData GL_ARRAY_BUFFER (* (sizeof fft-float) (length colors)) colors GL_STATIC_DRAW)
 
             (glUseProgram (get dictionary 'program 0))
             ; matrices
@@ -155,11 +162,11 @@
             (glUniformMatrix4fv (glGetUniformLocation (get dictionary 'program 0) (c-string "uProjectionMatrix"))
                1 GL_FALSE (apply append (get dictionary GL_PROJECTION_MATRIX identity-matrix)))
             ; vertices
-            (glBindBuffer GL_ARRAY_BUFFER (first vbos))
+            (glBindBuffer GL_ARRAY_BUFFER (list-ref vbos 0))
             (glVertexAttribPointer vPosition 3 GL_FLOAT GL_FALSE 0 #false)
             (glEnableVertexAttribArray vPosition)
             ; colors
-            (glBindBuffer GL_ARRAY_BUFFER (second vbos))
+            (glBindBuffer GL_ARRAY_BUFFER (list-ref vbos 1))
             (glVertexAttribPointer vColor 4 GL_FLOAT GL_FALSE 0 #false)
             (glEnableVertexAttribArray vColor)
             ;(print "mode: " mode)
@@ -169,7 +176,7 @@
 
             ; free resources
             (glDeleteBuffers (length vbos) vbos))
-         (print) ; hack, this forces ui switch from console to canvas
+         (print) ; trick, this forces ui switch from console to canvas in web version
          (this dictionary))
 
       (else
@@ -294,7 +301,7 @@
 
    (define (gl:set-window-title title)
       (exec (fold string-append (string #\; 0) (list "window.document.title = '" title "'"))))
-   
+
 
    ; opengl function emulation
    (define (glBegin mode)
@@ -306,22 +313,23 @@
       (mail 'opengl (tuple 'glVertex x y 0)))
    (define (glVertex3f x y z)
       (mail 'opengl (tuple 'glVertex x y z)))
-   (define glVertex (case-lambda
-      ((x y)
-         (glVertex2f x y))
-      ((x y z)
-         (glVertex3f x y z))))
+
+   ;; (define glVertex (case-lambda
+   ;;    ((x y)
+   ;;       (glVertex2f x y))
+   ;;    ((x y z)
+   ;;       (glVertex3f x y z))))
    ; colors
    (define (glColor3f r g b)
       (mail 'opengl (tuple 'glColor r g b 1)))
    (define (glColor4f r g b a)
       (mail 'opengl (tuple 'glColor r g b a)))
 
-   (define glColor (case-lambda
-      ((r g b)
-         (glColor3f r g b))
-      ((r g b a)
-         (glColor4f r g b a))))
+   ;; (define glColor (case-lambda
+   ;;    ((r g b)
+   ;;       (glColor3f r g b))
+   ;;    ((r g b a)
+   ;;       (glColor4f r g b a))))
 
    ; matrices
    (define (glMatrixMode mode)
@@ -330,6 +338,9 @@
       (mail 'opengl (tuple 'pop-matrix)))
    (define (glPushMatrix)
       (mail 'opengl (tuple 'push-matrix)))
+
+   (define (glLoadIdentity)
+      (mail 'opengl (tuple 'set-matrix identity-matrix)))
 
    (define (glMultMatrix matrix)
       (mail 'opengl (tuple 'mult-matrix matrix)))
@@ -346,6 +357,6 @@
                   (list 0 (/ 2 (- top bottom)) 0 Ty)
                   (list 0 0 (/ -2 (- far near))  Tz) ; z is reversed
                   (list 0 0 0                    1)))))
-   
+
 
 ))

@@ -125,7 +125,6 @@ var Module = {
    postRun: function() {
       terminal.focus();
       terminal.exec("\n"); // start loading process.
-//    terminal.exec("(import (lib opengl))");
       terminal.resume();
    },
 
@@ -157,8 +156,10 @@ var Module = {
       terminal.echo(text);
 
       // well, we got greeting. let's import (lib opengl)
-      if (text == "type ',help' to help, ',quit' to end session.")
-         terminal.exec("(import (lib opengl))");
+      if (text == "type ',help' to help, ',quit' to end session.") {
+         terminal.exec("(import (lib gl2))");
+         terminal.echo("Please wait while loading gl library. It may take some time...");
+      }
    },
    printErr: function(text) {
       console.log("error: ", text);
@@ -216,17 +217,16 @@ window.onerror = function(event) {
 
 // FILE SYSTEM
 var Libraries = [
-      { path: "/otus", name: "ffi.scm",    file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/otus/ffi.scm" },
-//      { path: "/otus", name: "ffi.scm",    file: "lib/ffi.scm" },
-      { path: "/lib",  name: "opengl.scm", file: "lib/opengl.scm" },
+    { path: "/lib",  name: "gl2.scm",  file: "lib/gl2.scm" },
+    { path: "/otus", name: "ffi.scm",  file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/otus/ffi.scm" },
+    { path: "/EGL",  name: "version-1-1.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/EGL/version-1-1.scm" },
+    { path: "/lib",  name: "math.scm", file: "lib/math.scm" },
+//  { path: "/OpenGL/ES", name: "version-2-0.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/OpenGL/ES/version-2-0.scm" },
+    { path: "/OpenGL/ES", name: "version-2-0.scm", file: "lib/version-2-0.scm" },
 
-      { path: "/EGL",       name: "version-1-1.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/EGL/version-1-1.scm" },
-      { path: "/OpenGL/ES", name: "version-2-0.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/OpenGL/ES/version-2-0.scm" },
-//    { path: "/OpenGL/ES", name: "version-2-0.scm", file: "lib/version-2-0.scm" },
-
-//    { path: "/", name: "init.lisp", file: "init.lisp" },
-      { path: "/", name: "repl", file: "https://rawgit.com/yuriy-chumak/ol/master/repl" }
-   ];
+//  { path: "/", name: "init.lisp", file: "init.lisp" },
+    { path: "/", name: "repl", file: "https://rawgit.com/yuriy-chumak/ol/master/repl" }
+];
 var Downloaded = 0;
 
 Libraries.forEach( function(item) {
@@ -250,14 +250,14 @@ Libraries.forEach( function(item) {
             // load olvm
             var script = document.createElement('script');
             script.src = "olvm.js";
-         
+
             script.addEventListener('load', function(me) {
                terminal.echo("Loading...")
             }, false);
             script.addEventListener('error', function(event) {
                terminal.echo("Can't find olvm. Build it first and try again.")
             }, false);
-         
+
             document.body.appendChild(script);
          }
       }

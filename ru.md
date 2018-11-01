@@ -3,9 +3,10 @@ layout: page
 title:  Summary
 categories: index
 ---
+
 > Тот, кто перестает учиться — стареет, будь то в двадцать или восемьдесят. Тот, кто продолжает обучение — остается молодым. Самая важная вещь в жизни – сохранить свой ум молодым.
 > <br/> <span style="float: right;">Г. Форд</span>
-<br/>
+
 
 ### Вступление
 
@@ -30,6 +31,6 @@ categories: index
 1. [Простой треугольник](?ru/simple-triangle)
 1. [Простой цветной треугольник](?ru/simple-colored-triangle)
 1. [Система координат и линии, ортографическая проекция](?ru/coordinate-system)
-1. [Сдвиги и вращения](?ru/transformations)
+1. [Рисуем синус и косинус](?ru/function-sincos)
 
 <small style="float: right">Copyright (c) 2018 Yuriy Chumak</small>

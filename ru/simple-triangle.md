@@ -58,7 +58,7 @@ categories: ru
 
 Библиотека OpenGL имеет несколько разных функций для точек. Это glVertex2d, glVertex2dv, glVertex2f, glVertex2fv, glVertex2i, glVertex2iv, glVertex2s, glVertex2sv, glVertex3d, glVertex3dv, glVertex3f, ..., glVertex4iv, glVertex4s, glVertex4sv. Все эти функции своими суффиксами подсказывают библиотеке какие именно числа мы используем: "f" - float, число с плавающей запятой; "d" - double, число с плавающей запятой двойной точности; "i" - целое; "s" - короткое целое.
 
-Нам эти сложности будут ни к чему. Поэтому мы здесь и дальше будем использовать упрощенную функцию glVertex, которая не являясь стандартной для OpenGL предоставляется используемым языком для абстрагирования от этих сложностей. Эта функция будет превращать (glVertex x y) в (glVertex2f x y) и (glVertex x y z) в (glVertex3f x y z). 
+Мы здесь и дальше в основном будем использовать функции glVertex2f и glVertex3f.
 
 
 ## Все вместе
@@ -66,12 +66,12 @@ categories: ru
 Итак, вся наша программа в окончательном виде будет выглядеть так:
 
 <pre><button class="doit" onclick="doit(lines.textContent)">отправить в терминал</button><code id="lines" data-language="ol">
-(import (lib opengl))
+(import (lib gl2))
 
 (glBegin GL_TRIANGLES)
-   (glVertex 0.0 0.5)
-   (glVertex -0.5 -0.5)
-   (glVertex 0.5 -0.5)
+   (glVertex2f 0.0 0.5)
+   (glVertex2f -0.5 -0.5)
+   (glVertex2f 0.5 -0.5)
 (glEnd)
 </code></pre>
 
