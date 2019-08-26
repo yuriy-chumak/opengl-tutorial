@@ -5,6 +5,9 @@ $(document).keydown(function(e) {
    }
 });
 
+// emscripten undocumented function:
+function abortStackOverflow() {}
+
 function showTerminal()
 {
    savedFocus = document.activeElement;
@@ -45,26 +48,32 @@ function switchTerminal(e)
 
 function doit(text)
 {
-   showTerminal();
+    showTerminal();
 
-   terminal.focus();
 //   console.log("text:", text);
-   if (text.indexOf("\n") == 0)
-      text = text.substring(1);
-   terminal.exec(text);
+//   if (text.indexOf("\n") == 0)
+//      text = text.substring(1);
+    terminal.focus();
+    terminal.exec(text);
 }
 
 // TERMINAL:
 var stdInput = ""; //unescape(encodeURIComponent(",load \"init.lisp\"")); // loading the script with initial code
+var ol_init, ol_eval;
+var stdOutput = "";
 
 var terminal;
 $('#terminal').terminal(function(command, terminal) {
-   stdInput += unescape(encodeURIComponent(command));
+    //stdInput += unescape(encodeURIComponent(command));
 
-   // let's clear prompt up to got response
-   terminal.set_prompt('');
+    // todo: check parenthesis
+    terminal.set_prompt('');
+    ol_eval(unescape(encodeURIComponent(command)));
+    terminal.set_prompt('> ');
+
+    // let's clear prompt up to got response
 }, {
-   prompt: '> ',
+   prompt: 'Please wait, loading library files...',
    name: 'repl',
    greetings: '',
    enabled: false,
@@ -86,9 +95,9 @@ $('#terminal').mousewheel(function(event) {
 });
 
 var Module = {
-   //arguments: ['/repl', 'test.lisp', '--interactive'],
-   arguments: ['/repl', '-', '--interactive'],
-   // dynamicLibraries: ['libNewton.js'],
+//   arguments: ['#', '-', '--embed'],
+//   arguments: ['platform', '-'],
+   dynamicLibraries: ['olvm.js', 'repl.js', 'oljs.js', 'gl2es.js'],
    TOTAL_MEMORY: 67108864,
 
    preRun: function() {
@@ -123,43 +132,49 @@ var Module = {
       //var GLctx; GL.init()
    },
    postRun: function() {
-      terminal.focus();
-      terminal.exec("\n"); // start loading process.
+      ol_init = Module.cwrap('ol_init', 'number', []);
+      ol_eval = Module.cwrap('ol_eval', 'number', ['string']);
+
+      ol_init();
+
       terminal.resume();
+      terminal.set_prompt('> ');
+
+      //terminal.exec("(import (lib gl))");
    },
 
    print: function(text) {
       if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+      stdOutput += text;
 
       if (terminal.ready == false) {
          terminal.ready = true;
          terminal.clear();
       }
 
-      //console.log("text: [", text, "]");
-
-      // reaction on "(print)" - show canvas
-      if (text=="> ") {
+/*      // reaction on "(print)" - show canvas
+      if (text=="'show-canvas") {
          terminal.ready = true;
          hideTerminal();
-      }
+      }//*/
 
       // let's process OL's prompt:
-      terminal.set_prompt('> ');
+/*
       terminal.position(1);
       while (text.indexOf("> ") == 0)
          text = text.substring(2);
+      terminal.set_prompt('> ');//*/
       terminal.resume();
 
-      if (text == "'delivered") // just filter the output log
-        return;
-      terminal.echo(text);
+//      if (text == "'delivered") // just filter the output log
+//         return;
+        terminal.echo(text);
 
       // well, we got greeting. let's import (lib opengl)
-      if (text == "type ',help' to help, ',quit' to end session.") {
-         terminal.exec("(import (lib gl2))");
-         terminal.echo("Please wait while loading gl library. It may take some time...");
-      }
+//      if (text.startsWith("Welcome to Otus Lisp"))
+//        terminal.exec("(import (OpenGL platform))");
+      //        console.log(Module);
+         //terminal.exec("(import (lib gl)) (import (OpenGL version-1-0))");
    },
    printErr: function(text) {
       console.log("error: ", text);
@@ -205,7 +220,7 @@ var Module = {
       // Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
    }
 };
-Module.setStatus('Downloading...');
+//Module.setStatus('Downloading OL Virtual Machine');
 window.onerror = function(event) {
    // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
    Module.setStatus('onerror: Exception thrown, see JavaScript console', event);
@@ -217,16 +232,15 @@ window.onerror = function(event) {
 
 // FILE SYSTEM
 var Libraries = [
-    { path: "/lib",  name: "gl2.scm",  file: "lib/gl2.scm" },
-    { path: "/otus", name: "ffi.scm",  file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/otus/ffi.scm" },
-    { path: "/EGL",  name: "version-1-1.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/EGL/version-1-1.scm" },
-    { path: "/lib",  name: "math.scm", file: "lib/math.scm" },
-//  { path: "/OpenGL/ES", name: "version-2-0.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/OpenGL/ES/version-2-0.scm" },
-    { path: "/OpenGL/ES", name: "version-2-0.scm", file: "lib/version-2-0.scm" },
+    { path: "/otus",    name: "ffi.scm",         file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/otus/ffi.scm" },
 
-//  { path: "/", name: "init.lisp", file: "init.lisp" },
-    { path: "/", name: "repl", file: "https://rawgit.com/yuriy-chumak/ol/master/repl" }
-];
+    { path: "/EGL",     name: "version-1-1.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/EGL/version-1-1.scm" },
+
+    { path: "/OpenGL",  name: "platform.scm",    file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/OpenGL/platform.scm" },
+    { path: "/OpenGL",  name: "version-1-0.scm", file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/OpenGL/version-1-0.scm" },
+    { path: "/lib/gl",  name: "config.scm",      file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/lib/gl/config.scm" },
+    { path: "/lib",     name: "gl.scm",          file: "https://rawgit.com/yuriy-chumak/ol/master/libraries/lib/gl.scm" },
+  ];
 var Downloaded = 0;
 
 Libraries.forEach( function(item) {
@@ -243,19 +257,21 @@ Libraries.forEach( function(item) {
          console.log(c);
       },
       success: function( data ) {
-         console.log("ok: ", item.name)
+         console.log("ok: ", item.path + "/" + item.name)
          item.data = data;
 
          if (++Downloaded == Libraries.length) {
             // load olvm
             var script = document.createElement('script');
-            script.src = "olvm.js";
-
+            script.src = "emscripten.js";
+         
             script.addEventListener('load', function(me) {
-               terminal.echo("Loading...")
+                terminal.set_prompt('');
+                terminal.echo("Booting Virtual Machine...")
             }, false);
             script.addEventListener('error', function(event) {
-               terminal.echo("Can't find olvm. Build it first and try again.")
+                terminal.set_prompt('');
+                terminal.echo("Can't find olvm. Build it first and try again.")
             }, false);
 
             document.body.appendChild(script);
